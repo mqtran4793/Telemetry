@@ -58,6 +58,9 @@
                 <button class="btn btn-outline options-btn" data-toggle="modal" data-target="#optionsModal" style="margin-right: 15px;">
                        Options
                 </button>
+                <button class="btn btn-outline-warning help-btn" data-toggle="modal" data-target="#serial-file-modal" style="margin-right: 15px;">
+                        Upload File
+                </button>
                 <button class="btn btn-outline-info my-2 my-sm-0" style="margin-right: 10px;" id="refresh" type="submit">Refresh Devices</button>
                 <select class="custom-select mb-2 mr-sm-2 mb-sm-0" id="device-select">
                     <option value="-1" selected>Select Serial Device ...</option>
@@ -101,7 +104,7 @@
     <!-- Help Modal -->
     <div id="helpModal" class="modal fade" role="dialog">
         <div class="modal-dialog modal-lg">
-    
+
             <div class="modal-content">
                 <div class="modal-header">
                     <h4 class="modal-title">How to Use Telemetry</h4>
@@ -112,7 +115,7 @@
                     <ol>
                         <li>Connect device to USB port</li>
                         <li>Press "Refresh Devices" on navbar to update list of devices connected</li>
-                        <li>Using the dropdown menu next to the connect button, connect to the 
+                        <li>Using the dropdown menu next to the connect button, connect to the
                             corresponding COM or TTY serial device number and press Connect.</li>
                     </ol>
                     <h4>Serial Frequency Select</h4>
@@ -121,18 +124,18 @@
                     </ul>
                     <h4>Serial Baud Select</h4>
                     <ul>
-                        <li>Baud rates select the rate at which bits are sent and received from Telemetry 
+                        <li>Baud rates select the rate at which bits are sent and received from Telemetry
                         to your device.</li>
                         <li> 1 Baud represents one bit of information transferred per second.</li>
                     </ul>
                     <h4>Carriage Return (CR) and New Line (NL) Selectors</h4>
-                    <ul> 
+                    <ul>
                         <li>Having CR checked sends a carriage return command at the end of your string of text.</li>
                         <li>Having NL checked sends a new line command at the end of your string of text.</li>
                     </ul>
                     <h4>Telemetry Selector</h4>
                     <ul>
-                        <li>Having Telemetry checked enables the Telemetry features, and allows you to interact with your 
+                        <li>Having Telemetry checked enables the Telemetry features, and allows you to interact with your
                             variables in real time.</li>
                     </ul>
                     <h4>Graph Selector</h4>
@@ -144,7 +147,7 @@
                     <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
                 </div>
             </div>
-  
+
         </div>
     </div>
     <div class="container-fluid pt-4" style="height: 100%">
@@ -300,6 +303,28 @@
           </div>
           <div class="modal-footer">
             <button type="button" id="clear-cache" class="btn btn-danger" data-dismiss="modal">Yes, Clear Command History</button>
+            <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- File Upload Modal-->
+    <div class="modal fade" id="serial-file-modal" tabindex="-1" role="dialog" aria-labelledby="serial-file-modalLabel">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">Upload File To Current Device</h4>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+          </div>
+          <div class="modal-body">
+            <form>
+              <div class="form-group">
+                <input type="file" class="form-control-file" accept=".txt, .hex" id="serial-file" />
+              </div>
+            </form>
+            <div id="alert-display"></div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" id="serial-upload" class="btn btn-primary">Upload</button>
             <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
           </div>
         </div>

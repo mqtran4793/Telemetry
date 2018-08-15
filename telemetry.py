@@ -256,6 +256,16 @@ def set(component_name, variable_name, value):
     ser.write(payload.encode())
     lock.release()
     return SUCCESS
+# Serial file upload
+@app.route('/serial-file/', methods = ['POST'])
+def serial_file():
+    lock.acquire()
+    output = request.get_json()
+    decoded_output = urllib.unquote(output).decode("ascii")
+    #print(decoded_output)
+    ser.write(decoded_output.encode())
+    lock.release()
+    return SUCCESS
 
 if __name__ == "__main__":
     port = 5001

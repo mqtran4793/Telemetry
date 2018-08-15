@@ -345,6 +345,57 @@ $("#clear-cache").on("click", () =>
   console.info("CLEARED COMMAND HISTORY AND CACHE");
 });
 
+//Serial File Upload
+$("#serial-upload").on("click", () =>
+{
+  if (device_connected)
+  {
+    var serial_file = document.getElementById("serial-file").files;
+    if (serial_file.length == 0)
+    {
+      document.getElementById("alert-display").innerHTML = '<p>No file selected</p>';
+      console.info("No file");
+    }
+    else
+    {
+      var output = '';
+      var file = serial_file.item(0);
+      var reader = new FileReader();
+
+      reader.onload = function(e)
+      {
+        output = reader.result;
+        $.ajax({
+          url: `${URL}/serial-file/`,
+          method: "POST",
+          headers: {'Content-Type': 'application/json'},
+          data: JSON.stringify(output),
+          success: function( data )
+          {
+            if (data === SUCCESS)
+            {
+              document.getElementById("alert-display").innerHTML = '<p>File upload success!</p>';
+              console.info("FILE UPLOAD SUCCESS");
+            }
+            else
+            {
+              document.getElementById("alert-display").innerHTML = '<p>File upload failure</p>';
+              console.info("FILE UPLOAD FAILURE");
+            }
+          }
+        })
+      }
+      reader.readAsText(file);
+    }
+  }
+
+  else
+  {
+    document.getElementById("alert-display").innerHTML = '<p>Please connect a device before uploading a file</p>';
+  }
+
+});
+
 $("#graph-frequency-select").on("change", () =>
 {
     var val = $("#graph-frequency-select").val();
