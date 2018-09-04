@@ -32,6 +32,7 @@ import logging
 import webbrowser
 import sys
 import urllib
+import argparse
 from enum import Enum
 
 log = logging.getLogger('werkzeug')
@@ -280,7 +281,13 @@ def dtr(is_on):
     return SUCCESS
 
 if __name__ == "__main__":
-    port = 5001
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--port', type=int, help='Change port where Telemetry runs', default = 5001)
+    port_args = parser.parse_args()
+    if port_args.port >= 2000 and port_args.port <= 49151:
+      port = int(port_args.port)
+    else:
+      raise Exception("Please pick a port between 2000 and 49151")
     if len(sys.argv) == 2:
         port = sys.argv[1]
     # Open This application's web URL in default browser
