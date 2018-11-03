@@ -111,46 +111,64 @@ var redraw_counter      = 0;
 var history_position    = 0;
 
 //===================================
-//  Utility Functions
+//  Local Cache Functions
 //===================================
 
-function setCookie(cname, cvalue, exdays)
+//sets localStorage when value is changed
+function setCache(cname, cvalue)
 {
-    var d = new Date();
-    d.setTime(d.getTime() + (exdays*24*60*60*1000));
-    var expires = "expires="+ d.toUTCString();
-    document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
+  localStorage.setItem(cname, JSON.stringify(cvalue));
 }
 
-function getCookie(cname)
+function checkCache(cname)
 {
-    var name = cname + "=";
-    var decodedCookie = decodeURIComponent(document.cookie);
-    var ca = decodedCookie.split(';');
-    for(var i = 0; i <ca.length; i++)
-    {
-        var c = ca[i];
-        while (c.charAt(0) == ' ')
-        {
-            c = c.substring(1);
-        }
-        if (c.indexOf(name) == 0)
-        {
-            return c.substring(name.length, c.length);
-        }
-    }
-    return "";
+  if (localStorage.getItem(cname) != null)
+  {
+    return true;
+  }
+  else
+  {
+    return false;
+  }
 }
 
-function checkCookie(cookie)
+function getCache(cname)
 {
-    var user = getCookie(cookie);
-    var result = false;
-    if (user != "")
+  return JSON.parse(localStorage.getItem(cname));
+}
+
+function getCommandCache()
+{
+  if (localStorage.getItem('command_history') != null)
+  {
+    var get_storage = JSON.parse(localStorage.getItem('command_history'));
+    command_history = get_storage;
+    for(var i = 0; i < command_history.length; i++)
     {
-        result = true;
+        past_commands += '<option value="'+command_history[i]+'" />';
     }
-    return result;
+    document.getElementById('command-history').innerHTML = past_commands;
+    console.info("COMMAND CACHE RETRIEVED");
+  }
+
+  else
+  {
+    command_history = [];
+    console.info("NO COMMAND CACHE");
+  }
+}
+
+window.onbeforeunload => ()
+{
+  if (command_history.length > 100)
+  {
+    var sliced_history = [];
+    cached_history = command_history.slice(0,99);
+    localStorage.setItem('command_history', JSON.stringify(sliced_history));
+  }
+  else {
+    localStorage.setItem('command_history', JSON.stringify(command_history));
+  }
 }
 
 //===================================
@@ -292,7 +310,7 @@ $("#serial-frequency-select").on("change", () =>
     var val = $("#serial-frequency-select").val();
     var frequency = parseInt(val);
     serial_period = (frequency === -1) ? DEFAULT_PERIOD : 1000/frequency;
-    setCookie("serial-frequency-select", val, 30);
+    setCache("serial-frequency-select", val);
 });
 
 $("#telemetry-frequency-select").on("change", () =>
@@ -300,7 +318,7 @@ $("#telemetry-frequency-select").on("change", () =>
     var val = $("#telemetry-frequency-select").val();
     var frequency = parseInt(val);
     telemetry_period = (frequency === -1) ? DEFAULT_PERIOD : 1000/frequency;
-    setCookie("telemetry-frequency-select", val, 30);
+    setCache("telemetry-frequency-select", val);
 
     if(telemetry_period > graph_period)
     {
@@ -323,7 +341,7 @@ $("#serial-baud-select").on("change", () =>
     {
         if(data === SUCCESS) {}
     });
-    setCookie("serial-baud-select", val, 30);
+    setCache("serial-baud-select", val);
 });
 
 //Clear Button Code
@@ -345,7 +363,7 @@ $("#clear-cache-modal-open").on("click",() =>
 $("#clear-cache").on("click", () =>
 {
   command_history = [];
-  past_commands = ""; 
+  past_commands = "";
   document.getElementById('command-history').innerHTML = "";
   localStorage.setItem('command_history', JSON.stringify(command_history));
   console.info("CLEARED COMMAND HISTORY AND CACHE");
@@ -407,7 +425,7 @@ $("#graph-frequency-select").on("change", () =>
     var val = $("#graph-frequency-select").val();
     var frequency = parseInt(val);
     graph_period = (frequency === -1) ? DEFAULT_PERIOD : 1000/frequency;
-    setCookie("graph-frequency-select", val, 30);
+    setCache("graph-frequency-select", val);
 });
 
 $('#rts-control').on('change click', function(e)
@@ -431,7 +449,7 @@ $('#dtr-control').on('change click', function(e)
 $('#telemetry-on').on('change click', function(e)
 {
     telemetry_flag = $(this).is(":checked");
-    setCookie("telemetry-on", telemetry_flag, 30);
+    setCache("telemetry-on", telemetry_flag);
 
     var telemetry_feedback_section = $("#telemetry-feedback-section");
     var serial_output_section = $("#serial-output-section");
@@ -480,31 +498,31 @@ $('#telemetry-on').on('change click', function(e)
 $('#reset-on-connect').on('change', function()
 {
     reset_on_connect_flag = $(this).is(":checked");
-    setCookie("reset-on-connect", reset_on_connect_flag, 30);
+    setCache("reset-on-connect", reset_on_connect_flag);
 });
 
 $('#graph-switch').on('change', function()
 {
     graph_update_active = $(this).is(":checked");
-    setCookie("graph-switch", graph_update_active, 30);
+    setCache("graph-switch", graph_update_active);
 });
 
 $('#carriage-return-select').on('change', function()
 {
     carriage_return_active = $(this).is(":checked");
-    setCookie("carriage-return-active", carriage_return_active, 30);
+    setCache("carriage-return-active", carriage_return_active);
 });
 
 $('#newline-select').on('change', function()
 {
     newline_active = $(this).is(":checked");
-    setCookie("newline-active", newline_active, 30);
+    setCache("newline-active", newline_active);
 });
 
 $("#dark-theme").on('change', function()
 {
     darktheme_active = $(this).is(":checked");
-    setCookie("darktheme-active", darktheme_active, 30);
+    setCache("darktheme-active", darktheme_active);
     if(darktheme_active){
         $('head').append('<link rel="stylesheet" type="text/css" id="dark-style" href="static/lib/themes/dark-theme.css" >');
     }else{
@@ -800,44 +818,6 @@ function checkConnection()
 }
 
 //===================================
-//  Local Cache Functions
-//===================================
-
-function getCache()
-{
-  if (localStorage.getItem('command_history') != null)
-  {
-    var get_storage = JSON.parse(localStorage.getItem('command_history'));
-    command_history = get_storage;
-    for(var i = 0; i < command_history.length; i++)
-    {
-        past_commands += '<option value="'+command_history[i]+'" />';
-    }
-    document.getElementById('command-history').innerHTML = past_commands;
-    console.info("COMMAND CACHE RETRIEVED");
-  }
-
-  else
-  {
-    command_history = [];
-    console.info("NO COMMAND CACHE");
-  }
-}
-
-window.onbeforeunload = function setCache()
-{
-  if (command_history.length > 100)
-  {
-    var sliced_history = [];
-    cached_history = command_history.slice(0,99);
-    localStorage.setItem('command_history', JSON.stringify(sliced_history));
-  }
-  else {
-    localStorage.setItem('command_history', JSON.stringify(command_history));
-  }
-}
-
-//===================================
 //  Initialize everything
 //===================================
 
@@ -895,14 +875,14 @@ window.onload = function()
         checkConnection();
         getSerial();
         getTelemetry();
-        getCache();
+        getCommandCache();
         $("#refresh").click();
 
         $("#telemetry-feedback-section").css('display', '');
         //// TODO: Convert the items below into a for loop
-        if(checkCookie('telemetry-on'))
+        if(checkCache('telemetry-on'))
         {
-            $("#telemetry-on").prop("checked", getCookie("telemetry-on") === "true");
+            $("#telemetry-on").prop("checked", getCache("telemetry-on") === true);
             $("#telemetry-on").change();
             if(!telemetry_flag)
             {
@@ -913,49 +893,49 @@ window.onload = function()
                 $("#telemetry-feedback-section").css('visibility', 'visible');
             }
         }
-        if(checkCookie("reset-on-connect"))
+        if(checkCache("reset-on-connect"))
         {
-            $("#reset-on-connect").prop("checked", getCookie("reset-on-connect") === "true");
+            $("#reset-on-connect").prop("checked", getCache("reset-on-connect") === true);
             $("#reset-on-connect").change();
         }
-        if(checkCookie("carriage-return-active"))
+        if(checkCache("carriage-return-active"))
         {
-            $("#carriage-return-select").prop("checked", getCookie("carriage-return-active") === "true");
+            $("#carriage-return-select").prop("checked", getCache("carriage-return-active") === true);
             $("#carriage-return-select").change();
         }
-        if(checkCookie("newline-active"))
+        if(checkCache("newline-active"))
         {
-            $("#newline-select").prop("checked", getCookie("newline-active") === "true");
+            $("#newline-select").prop("checked", getCache("newline-active") === true);
             $("#newline-select").change();
         }
-        if(checkCookie("darktheme-active"))
+        if(checkCache("darktheme-active"))
         {
-            $("#dark-theme").prop("checked", getCookie("darktheme-active") === "true");
+            $("#dark-theme").prop("checked", getCache("darktheme-active") === true);
             $("#dark-theme").change();
         }
-        if(checkCookie("serial-frequency-select"))
+        if(checkCache("serial-frequency-select"))
         {
-            $("#serial-frequency-select").val(getCookie("serial-frequency-select"));
+            $("#serial-frequency-select").val(getCache("serial-frequency-select"));
             $("#serial-frequency-select").change();
         }
-        if(checkCookie("telemetry-frequency-select"))
+        if(checkCache("telemetry-frequency-select"))
         {
-            $("#telemetry-frequency-select").val(getCookie("telemetry-frequency-select"));
+            $("#telemetry-frequency-select").val(getCache("telemetry-frequency-select"));
             $("#telemetry-frequency-select").change();
         }
-        if(checkCookie("graph-switch"))
+        if(checkCache("graph-switch"))
         {
-            $("#graph-switch").prop("checked", getCookie("graph-switch") === "true");
+            $("#graph-switch").prop("checked", getCache("graph-switch") === true);
             $("#graph-switch").change();
         }
-        if(checkCookie("graph-frequency-select"))
+        if(checkCache("graph-frequency-select"))
         {
-            $("#graph-frequency-select").val(getCookie("graph-frequency-select"));
+            $("#graph-frequency-select").val(getCache("graph-frequency-select"));
             $("#graph-frequency-select").change();
         }
-        if(checkCookie("serial-baud-select"))
+        if(checkCache("serial-baud-select"))
         {
-            $("#serial-baud-select").val(getCookie("serial-baud-select"));
+            $("#serial-baud-select").val(getCache("serial-baud-select"));
             $("#serial-baud-select").change();
         }
     }, 100);
