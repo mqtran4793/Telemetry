@@ -6,7 +6,7 @@ let history_position = 0;
 let command_history = [];
 const decoder = new TextDecoder("utf-8");
 const encoder = new TextEncoder("utf-8");
-const CHROME_EXTENSION_ID = "fmbgflhmjkcgohkhjobldjjgpbgpljdl";
+const CHROME_EXTENSION_ID = "ofafcebldfkhklojjecfpjpblfaflfhd";
 const flags = new Flags();
 const change_event = new Event("change");
 const collator = new Intl.Collator(undefined, {
@@ -385,7 +385,7 @@ function main()
     app_id = CHROME_EXTENSION_ID;
     console.debug("Using CHROME_EXTENSION_ID:", app_id);
   }
-  // Check the version of the app, and if a valid respones comes back, attempt
+  // Check the version of the app, and if a valid response comes back, attempt
   // to connect to the app.
   try {
     chrome.runtime.sendMessage(app_id, "version", (response) =>
