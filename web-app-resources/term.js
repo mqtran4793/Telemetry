@@ -8,7 +8,7 @@ let term = new Terminal({
   lineHeight: 1,
   fontSize: 18,
   fontFamily: "Ubuntu Mono, courier-new, courier, monospace",
-  scrollback: 1024,
+  scrollback: 1024*100,
 });
 
 term.on('key', function (key, event) {
