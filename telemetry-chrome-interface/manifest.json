@@ -2,7 +2,7 @@
     "name": "Telemetry Serial Interface",
     "description": "A helper app to allow the Telemetry web application to communicate with serial TTY devices",
     "version": "0.6",
-    "manifest_version": 6,
+    "manifest_version": 3,
     "app": {
         "background": {
             "scripts": [
