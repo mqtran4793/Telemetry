@@ -13,7 +13,7 @@ const collator = new Intl.Collator(undefined, {
   numeric: true,
   sensitivity: "base"
 });
-const APP_VERSION = "0.5";
+const APP_VERSION = "0.6";
 function sleep(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
