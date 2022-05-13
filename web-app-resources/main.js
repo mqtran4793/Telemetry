@@ -6,7 +6,7 @@ let history_position = 0;
 let command_history = [];
 const decoder = new TextDecoder("utf-8");
 const encoder = new TextEncoder("utf-8");
-const CHROME_EXTENSION_ID = "ofafcebldfkhklojjecfpjpblfaflfhd";
+const CHROME_EXTENSION_ID = "eahllbljfeledmkfhcbamhhblpjachpm";
 const flags = new Flags();
 const change_event = new Event("change");
 const collator = new Intl.Collator(undefined, {
@@ -14,26 +14,22 @@ const collator = new Intl.Collator(undefined, {
   sensitivity: "base"
 });
 const APP_VERSION = "0.5";
-function sleep(ms)
-{
+function sleep(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
 //===================================
 //  Parsers & Generator Functions
-function GenerateConnectionId(length)
-{
+function GenerateConnectionId(length) {
   return Math.random()
     .toString(36)
     .slice(2);
 }
-function generateDropDownList(port_info)
-{
+function generateDropDownList(port_info) {
   if (port_info.length == 0) {
     return '<option value="-1" selected="selected">No Serial Ports</option>';
   }
   // Convert port_info array into an array of serial port paths
-  const paths = port_info.map(port =>
-  {
+  const paths = port_info.map(port => {
     return port.path;
   });
   // Sort using numeric language sensitive string comparison.
@@ -58,8 +54,7 @@ function generateDropDownList(port_info)
   return html;
 }
 
-function generateCommandListHtml(command_list)
-{
+function generateCommandListHtml(command_list) {
   if (!command_list) {
     return "";
   }
@@ -79,8 +74,7 @@ let serial_extension = undefined;
 //===================================
 //  Button Click Listeners
 //===================================
-document.querySelector("#connect").addEventListener("click", () =>
-{
+document.querySelector("#connect").addEventListener("click", () => {
   let device = flags.get("device-select");
   console.log(device);
 
@@ -104,8 +98,7 @@ document.querySelector("#connect").addEventListener("click", () =>
   });
 });
 
-document.querySelector("#serial-input").addEventListener("keyup", event =>
-{
+document.querySelector("#serial-input").addEventListener("keyup", event => {
   const DOWN_ARROW = 38;
   const UP_ARROW = 40;
   const ENTER_KEY = 13;
@@ -138,8 +131,7 @@ document.querySelector("#serial-input").addEventListener("keyup", event =>
   }
 });
 
-document.querySelector("#serial-send").addEventListener("click", () =>
-{
+document.querySelector("#serial-send").addEventListener("click", () => {
   let payload = $("#serial-input").val();
   $("#serial-input").val("");
 
@@ -161,8 +153,7 @@ document.querySelector("#serial-send").addEventListener("click", () =>
 });
 
 //Clear Button Code
-document.querySelector("#clear-button").addEventListener("click", () =>
-{
+document.querySelector("#clear-button").addEventListener("click", () => {
   // [0m = Reset color codes
   // [3J = Remove terminal buffer
   // [2J = Clear screen
@@ -173,22 +164,18 @@ document.querySelector("#clear-button").addEventListener("click", () =>
 //Command History Code
 document
   .querySelector("#clear-cache-modal-open")
-  .addEventListener("click", () =>
-  {
+  .addEventListener("click", () => {
     $("#clear-cache-modal").modal("show");
   });
 
-document.querySelector("#clear-command-cache").addEventListener("click", () =>
-{
+document.querySelector("#clear-command-cache").addEventListener("click", () => {
   flags.set("command-history", [
     /* empty array */
   ]);
 });
 
-async function asyncPostMessage(payload)
-{
-  return new Promise(resolve =>
-  {
+async function asyncPostMessage(payload) {
+  return new Promise(resolve => {
     serial_extension.postMessage(payload);
     resolve();
   });
@@ -196,8 +183,7 @@ async function asyncPostMessage(payload)
 
 const progress_bar = document.querySelector("#hyperload-progress");
 
-document.querySelector("#hyperload-button").addEventListener("click", () =>
-{
+document.querySelector("#hyperload-button").addEventListener("click", () => {
   let serial_file = document.querySelector("#hyperload-file").files;
   if (!device_connected) {
     alert("Please connect a device before attempting to flash it.");
@@ -219,8 +205,7 @@ document.querySelector("#hyperload-button").addEventListener("click", () =>
   let reader = new FileReader();
 
   // This event listener will be fired once reader.readAsText() finishes
-  reader.onload = async () =>
-  {
+  reader.onload = async () => {
     console.debug(reader);
     let application_binary = new Uint8Array(reader.result);
     let success = await Hyperload(asyncPostMessage, application_binary, progress_bar);
@@ -242,8 +227,7 @@ document.querySelector("#hyperload-button").addEventListener("click", () =>
 });
 
 //Serial File Upload
-document.querySelector("#serial-upload").addEventListener("click", () =>
-{
+document.querySelector("#serial-upload").addEventListener("click", () => {
   let serial_file = document.querySelector("#serial-file").files;
   if (!device_connected) {
     alert("Please connect a device before uploading a file.");
@@ -258,8 +242,7 @@ document.querySelector("#serial-upload").addEventListener("click", () =>
   let reader = new FileReader();
 
   // This event listener will be fired once reader.readAsText() finishes
-  reader.onload = () =>
-  {
+  reader.onload = () => {
     serial_extension.postMessage({
       command: "write",
       data: Array.from(reader.result)
@@ -272,8 +255,7 @@ document.querySelector("#serial-upload").addEventListener("click", () =>
 //===================================
 //  Initialize everything
 //===================================
-function chromeAppMessageHandler(response)
-{
+function chromeAppMessageHandler(response) {
   switch (response.responder) {
     case "list":
       const list_html = generateDropDownList(response.data);
@@ -321,8 +303,7 @@ function chromeAppMessageHandler(response)
   }
 }
 
-function RtsDtrControlHandler()
-{
+function RtsDtrControlHandler() {
   console.log("RtsDtrControlHandler");
   let rts_flag = document.querySelector("#rts-control").checked ? true : false;
   let dtr_flag = document.querySelector("#dtr-control").checked ? true : false;
@@ -336,8 +317,7 @@ function RtsDtrControlHandler()
   });
 }
 
-function ApplyDarkTheme(dark_theme_active)
-{
+function ApplyDarkTheme(dark_theme_active) {
   console.debug("Dark theme: ", dark_theme_active);
   let head = document.querySelector("head");
   if (dark_theme_active) {
@@ -354,8 +334,7 @@ function ApplyDarkTheme(dark_theme_active)
   }
 }
 
-function commandHistoryUpdateHandler(command_list)
-{
+function commandHistoryUpdateHandler(command_list) {
   let command_history_element = document.querySelector("#command-history");
   command_history_element.innerHTML = generateCommandListHtml(command_list);
   console.debug("Command history updated");
@@ -372,8 +351,7 @@ flags.attach("device-select", "change");
 flags.attach("chrome-app-id", "change");
 flags.bind("command-history", commandHistoryUpdateHandler, []);
 
-function main()
-{
+function main() {
   term.open(document.querySelector("#terminal"));
   term.fit();
 
@@ -388,8 +366,7 @@ function main()
   // Check the version of the app, and if a valid response comes back, attempt
   // to connect to the app.
   try {
-    chrome.runtime.sendMessage(app_id, "version", (response) =>
-    {
+    chrome.runtime.sendMessage(app_id, "version", (response) => {
       if (response && response.version.toString() == APP_VERSION) {
         serial_extension = chrome.runtime.connect(
           app_id,
@@ -403,8 +380,7 @@ function main()
         $("#chrome-app-title").text("Chrome App Out of Date!");
         $("#not-connected-modal").modal("show");
         serial_extension = {
-          postMessage: () =>
-          {
+          postMessage: () => {
             $("#not-connected-modal").modal("show");
           }
         };
@@ -414,27 +390,23 @@ function main()
     $("#not-connected-modal").modal("show");
     $("#chrome-app-title").text("Chrome App Is Not Connected!");
     serial_extension = {
-      postMessage: () =>
-      {
+      postMessage: () => {
         $("#not-connected-modal").modal("show");
       }
     };
   }
 }
 
-$(document).on('click', '.browse', function ()
-{
+$(document).on('click', '.browse', function () {
   var file = $(this).parent().parent().parent().find('.file');
   file.trigger('click');
 });
-$(document).on('change', '.file', function ()
-{
+$(document).on('change', '.file', function () {
   $(this).parent().find('.form-control')
     .val($(this).val().replace(/C:\\fakepath\\/i, ''));
 });
 
-window.onbeforeunload = () =>
-{
+window.onbeforeunload = () => {
   let command_history = flags.get("command-history");
   if (command_history) {
     flags.set("command-history", command_history.slice(0, 99));
@@ -442,8 +414,7 @@ window.onbeforeunload = () =>
   flags.teardown();
   return null;
 };
-window.addEventListener("resize", () =>
-{
+window.addEventListener("resize", () => {
   term.fit();
 });
 // Entry point of software start

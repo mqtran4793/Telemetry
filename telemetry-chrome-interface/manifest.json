@@ -1,20 +1,27 @@
 {
     "name": "Telemetry Serial Interface",
     "description": "A helper app to allow the Telemetry web application to communicate with serial TTY devices",
-    "version": "0.5",
-    "manifest_version": 5,
+    "version": "0.6",
+    "manifest_version": 6,
     "app": {
         "background": {
-            "scripts": ["background.js"]
+            "scripts": [
+                "background.js"
+            ]
         }
     },
-    "permissions": ["serial"],
+    "permissions": [
+        "serial"
+    ],
     "externally_connectable": {
-        "ids": ["*"],
+        "ids": [
+            "*"
+        ],
         "matches": [
-          "http://localhost:8080/*",
-          "https://kammce.github.io/Telemetry/*",
-          "https://sjsu-dev2.github.io/Telemetry/*"
+            "http://localhost:8080/*",
+            "https://kammce.github.io/Telemetry/*",
+            "https://sjsu-dev2.github.io/Telemetry/*",
+            "https://libembeddedhal.github.io/Telemetry/*"
         ]
     }
 }
