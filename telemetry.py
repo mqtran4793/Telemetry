@@ -58,11 +58,11 @@ PARTIAL_TELEMETETRY_PATTERN     = re.compile('(?s)'+PROMPT_CAPTURE_GROUP+'teleme
 
 # SETUP FLASK APPLICATION
 app                             = Flask(__name__)
-app.debug                       = False
+app.debug                       = True
 
 # SERIAL DATA STORAGE
-serial_output                   = b""
-serial_output_history           = b""
+serial_output                   = ""
+serial_output_history           = ""
 baudrate                        = 38400
 
 # SETUP SERIAL PORT
@@ -72,7 +72,7 @@ ser.baudrate                    = baudrate
 ser.rts                         = False
 ser.dtr                         = False
 ser.timeout                     = 0
-current_prompt                  = b""
+current_prompt                  = ""
 
 # THREAD VARIABLES
 lock = threading.Lock()
@@ -122,8 +122,7 @@ def get_telemetry():
     serial_response = ""
     telemetry_msg   = "telemetry ascii\n"
     # Flush the last serial data from port to serial_output
-    serial_output += ser.read(ser.inWaiting())\
-                        .decode(encoding='ascii', errors='ignore')
+    serial_output += ser.read(ser.inWaiting()).decode(encoding='ascii', errors='ignore')
 
     if ser.is_open and state == State.ONLINE_SYS_PROMPT:
         ser.write(telemetry_msg.encode())
